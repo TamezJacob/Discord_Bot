@@ -1,6 +1,6 @@
 module.exports = {
   name: "flip",
-  category: "fun",
+  category: "info",
   permissions: [],
   devOnly: false,
   run: async ({client, message, args}) => {
