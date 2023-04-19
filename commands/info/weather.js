@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { EmbedBuilder } = require("discord.js")
 const weather = require("weather-js");
 
 module.exports = {
@@ -9,47 +9,33 @@ module.exports = {
     command: {
         enabled: true,
         usage: "<type>",
-        minArgsCount: 2,
+        minArgsCount: 1,
     },
     run: async ({client, message, args, interaction}) =>{
     
-        const location = args[0].toString();
-        const degree = args[1].toString();
-        console.log(location);
+        const city = args.join(" ");
+        if(!city) { return message.channel.send("ERROR! No city included");}
 
-        message.reply({ content: 'Loading the weather...'});
+        weather.find({ search: city, degreeType: "F"}, (error, result) => {
+            if(error) return message.channel.send("Error occured");
+            else if (result.length === 0) return message.channel.send("Error, city not found");
 
-        await weather.find({ search: "Austin, TX", degreeType: "F", async function(err, result){
-            console.log("in here");
-            setTimeout(() => {
-                if (err){
-                    console.log(err);
-                    message.reply({ content: `${err} | Error occured... Try again`});
-                } else {
-                    const temp = result[0].current.temperature;
-                    const type = result[0].current.skytext;
-                    const name = result[0].location.name;
-                    const feel = result[0].current.feelslike;
-                    const icon = result[0].current.imageUrl;
-                    const wind = result[0].current.winddisplay;
-                    const day = result[0].current.day;
-                    const alert = result[0].location.alert || 'None';
+            let data = result[0];
+            let time = `${data.current.date}. ${data.current.observationtime}`;
+            const embed = new EmbedBuilder()
+                .setTitle(`Current weather of ${data.location.name}`)
+                .setColor(0x0099FF)
+                .setThumbnail(data.current.imageUrl)
+                .addFields({ name: "City", value: data.location.name})
+                .addFields({ name: "Sky Condition", value: data.current.skytext})
+                .addFields({ name: "Temperature", value: data.current.temperature})
+                .addFields({ name: "Wind Speed", value: data.current.windspeed})
+                .addFields({ name: "Timezone", value: data.location.timezone})
+                .addFields({ name: "Day", value: data.current.day})
+                
 
-                    const embed = new EmbedBuilder()
-                    .setColor("Blue")
-                    .setTitle(`Current weather of ${name}`)
-                    .addFields({ name: "Temperature", value: `${temp}`})
-                    .addFields({ name: "Feels Like", value: `${feel}`})
-                    .addFields({ name: "Weather", value: `${type}`})
-                    .addFields({ name: "Current Alerts", value: `${alert}`})
-                    .addFields({ name: "Week Day", value: `${day}`})
-                    .addFields({ name: "Wind Speed & Direction", value: `${wind}`})
-                    .setThumbnail(icon)
-
-                    message.reply({ content: ``, embeds: [embed]});
-                    
-                }
-            }, 2000)
-        }});
+            return message.channel.send({embeds: [embed]});
+        })
+        
     }
 }
