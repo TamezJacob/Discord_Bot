@@ -14,8 +14,6 @@ module.exports = {
         let trivia = await getTrivia()
         showQuestion(trivia.results[0]);
 
-        //test
-
         message.reply(`
         ${trivia.results[0].question}
 
