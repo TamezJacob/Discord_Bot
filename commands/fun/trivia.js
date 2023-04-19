@@ -22,6 +22,31 @@ module.exports = {
         C - ${trivia.results[0].incorrect_answers[2]}
         D -${trivia.results[0].correct_answer}
         `);
+
+        const filter = message => message.author.id === message.author.id;
+        let options = {
+            max: 2,
+            time: 1500
+        };
+        let collector = message.channel.createMessageCollector({filter, max: 2});
+
+        let state = false;
+
+        collector.on('collect', (message) => {
+            if(message.content == "d"){
+                message.reply('Correct answer!!');
+                state = true;
+            } else if(message.content = trivia.results[0]){
+                return;
+            } else {
+                message.reply('Incorrect answer');
+            }
+        });
+
+        collector.on('end', (collected) => {
+            console.log(`Collected ${collected.size} items`);
+            if (!state) message.reply('Incorrect answer');
+        });
     }
 }
 
