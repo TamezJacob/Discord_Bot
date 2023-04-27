@@ -20,10 +20,8 @@ module.exports = {
         const incorrectAnswers = trivia.results[0].incorrect_answers;
         const correctAnswer = trivia.results[0].correct_answer;
 
-        // Combine both arrays into a single array.
         const allAnswers = incorrectAnswers.concat(correctAnswer);
 
-        // Shuffle the array randomly using the Fisher-Yates shuffle algorithm.
         for (let i = allAnswers.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [allAnswers[i], allAnswers[j]] = [allAnswers[j], allAnswers[i]];
@@ -31,7 +29,6 @@ module.exports = {
 
         console.log(correctAnswer);
 
-        // Create a new Discord message embed.
         const embed = new EmbedBuilder()
             .setTitle('What is the correct answer?')
             .setDescription(`${question}`)
@@ -45,7 +42,6 @@ module.exports = {
 
         
 
-        // Send the message embed to the same text channel where the command was received.
         message.channel.send({embeds: [embed]});
 
         const filter = message => message.author.id === message.author.id;
